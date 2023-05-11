@@ -1,62 +1,64 @@
-const getMonth = function (day, noOfDays) {
-  const days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-  const month = new Array(42).fill("  ");
+const { chunk } = require("./array-utils.js");
 
-  for (let i = day, j = 1; i < day + noOfDays; i++) {
-    month[i] = j++;
+const spaces = function (count) {
+  return " ".repeat(count);
+}
+
+const centerAlign = function (text, width) {
+  const length = text.toString().length;
+  return text.toString().padStart((width + length) / 2, spaces(1));
+}
+
+const getMonthlyCalendar = function (startingDay, noOfDays) {
+  const month = new Array(42).fill(spaces(2));
+
+  let date = 1;
+  for (let i = startingDay; i < startingDay + noOfDays; i++) {
+    month[i] = centerAlign(date, 3);
+    date++;
   }
 
   return month;
 }
 
-const toString = function (month) {
-  const chunks = chunk(month, 7);
-  return chunks.map(function (chunk) {
+const toString = function (monthlyCalendar, monthIndex, year) {
+  const months = [
+    "January", "February", "March", "April", "May",
+    "June", "July", "August", "September",
+    "October", "November", "December",
+  ];
+
+  const days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+  const month = months[monthIndex];
+
+  const heading = [centerAlign(month + ' ' + year, 20)];
+  const label = [heading, days];
+  const weeks = label.concat(chunk(monthlyCalendar, 7));
+
+  return weeks.map(function (chunk) {
     return chunk.join(" ");
   }).join("\n");
 }
 
-const calcFirstDayOfTheWeek = function () {
-  const today = new Date();
-  const day = today.getDay();
-  const date = today.getDate();
-  return (date - day);
-};
-
-const sum = function (numbers) {
-  return numbers.reduce(function (sum, num) {
-    return sum + num;
-  }, 0)
+const msToDay = function (ms) {
+  const msInADay = (1000 * 60 * 60 * 24);
+  return Math.floor(ms / msInADay);
 }
 
-const calculateDaysPassed = function (months, currentMonthIndex, currentDate) {
-  return sum(months.slice(0, currentMonthIndex)) + currentDate - 1;
+const getMonthDetails = function (monthIndex, year) {
+  const month = new Date(year, monthIndex, 1);
+  const nextMonth = new Date(year, monthIndex + 1, 1);
+  const days = msToDay(Date.parse(nextMonth) - Date.parse(month));
+
+  return [days, month.getDay()];
 }
 
-const calculateDay = function (days) {
-  const today = new Date();
-  return today.getDay() - days % 7;
+const toNumbers = function (numberTexts) {
+  return numberTexts.map(function (n) { return +n; })
 }
 
-const makeChunk = function (chunks, element, size) {
-  const newChunks = chunks.slice(0);
-  const lastChunkIndex = newChunks.length - 1;
-  const lastChunk = newChunks[lastChunkIndex];
-
-  if (lastChunk.length < size) {
-    lastChunk.push(element);
-  } else {
-    newChunks.push([element]);
-  }
-
-  return newChunks;
-}
-
-const chunk = function (list, size) {
-  return list.reduce(function (chunks, element) {
-    return makeChunk(chunks, element, size);
-  }, [[]]);
-}
-
-exports.calculateDay = calculateDay;
-exports.calculateDaysPassed = calculateDaysPassed;
+exports.msToDay = msToDay;
+exports.getMonthDetails = getMonthDetails;
+exports.getMonthlyCalendar = getMonthlyCalendar;
+exports.toString = toString;
+exports.toNumbers = toNumbers;
