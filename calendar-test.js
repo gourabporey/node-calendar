@@ -1,17 +1,6 @@
 const { describe, it } = require('node:test');
 const { strictEqual, ok, deepStrictEqual } = require('assert');
-const { Calendar, calculateDay, calculateDaysPassed } = require('./calendar.js');
-
-describe("Calendar", function () {
-  describe("Week()", function () {
-    it("Should give the whole week data", function () {
-      const cal = new Calendar();
-      const actual = cal.week(7);
-      const expected = { sun: 7, mon: 8, tue: 9, wed: 10, thu: 11, fri: 12, sat: 13 };
-      deepStrictEqual(actual, expected);
-    })
-  })
-})
+const { calculateDay, calculateDaysPassed } = require('./calendar.js');
 
 describe("CalculateDaysPassed()", function () {
   const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];

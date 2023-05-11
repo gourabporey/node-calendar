@@ -1,35 +1,25 @@
-class Calendar {
-  isLeapYear(year) {
-    const isDivisibleBy400 = year % 400 === 0;
-    const isDivisibleBy100 = year % 100 === 0;
-    const isDivisibleBy4 = year % 4 === 0;
+const getMonth = function (day, noOfDays) {
+  const days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+  const month = new Array(42).fill("  ");
 
-    return (isDivisibleBy100 + isDivisibleBy400 + isDivisibleBy4) % 2 === 1;
+  for (let i = day, j = 1; i < day + noOfDays; i++) {
+    month[i] = j++;
   }
 
-  year() {
-    const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  }
+  return month;
+}
 
-  week(firstDate, lastDate) {
-    const days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-    let date = firstDate;
-
-    return days.reduce(function (week, day) {
-      if (date === lastDate) return week;
-      return { ...week, [day]: date++ };
-    }, {});
-  };
-
-  month(day, noOfDays) {
-
-  }
+const toString = function (month) {
+  const chunks = chunk(month, 7);
+  return chunks.map(function (chunk) {
+    return chunk.join(" ");
+  }).join("\n");
 }
 
 const calcFirstDayOfTheWeek = function () {
   const today = new Date();
-  const day = today.getDay(); // 4 Day index 1 based indexing
-  const date = today.getDate(); // 11
+  const day = today.getDay();
+  const date = today.getDate();
   return (date - day);
 };
 
@@ -48,6 +38,25 @@ const calculateDay = function (days) {
   return today.getDay() - days % 7;
 }
 
-exports.Calendar = Calendar;
+const makeChunk = function (chunks, element, size) {
+  const newChunks = chunks.slice(0);
+  const lastChunkIndex = newChunks.length - 1;
+  const lastChunk = newChunks[lastChunkIndex];
+
+  if (lastChunk.length < size) {
+    lastChunk.push(element);
+  } else {
+    newChunks.push([element]);
+  }
+
+  return newChunks;
+}
+
+const chunk = function (list, size) {
+  return list.reduce(function (chunks, element) {
+    return makeChunk(chunks, element, size);
+  }, [[]]);
+}
+
 exports.calculateDay = calculateDay;
 exports.calculateDaysPassed = calculateDaysPassed;
