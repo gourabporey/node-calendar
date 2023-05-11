@@ -1,10 +1,10 @@
-const { getMonthDetails, getMonthlyCalendar, toString, toNumbers } = require("./calendar.js");
+const { getMonthlyCalendar, toString, toNumbers } = require("./src/calendar.js");
 
 const main = function (args) {
   const [month, year] = toNumbers(args);
   const monthIndex = month - 1;
-  const [noOfDays, startDay] = getMonthDetails(monthIndex, year);
-  const monthlyCalendar = getMonthlyCalendar(startDay, noOfDays);
+
+  const monthlyCalendar = getMonthlyCalendar(monthIndex, year);
 
   console.log(toString(monthlyCalendar, monthIndex, year));
 }
