@@ -2,25 +2,25 @@ const { chunk } = require("../lib/array-utils.js");
 const { spaces, centerAlign } = require("../lib/string-utils.js");
 
 class Calendar {
-  #monthIndex;
-  #year;
+  #months;
+  #days;
 
-  constructor(monthIndex, year = 2023) {
-    this.#monthIndex = monthIndex;
-    this.#year = year;
+  constructor(months, days) {
+    this.#months = [...months];
+    this.#days = [...days];
   }
 
-  get #daysInMonth() {
-    return new Date(this.#year, this.#monthIndex + 1).getUTCDate();
+  #getDaysInMonth(monthIndex, year = 2023) {
+    return new Date(year, monthIndex + 1).getUTCDate();
   }
 
-  get #startingDay() {
-    return new Date(this.#year, this.#monthIndex, 1).getDay();
+  #getStartingDay(monthIndex, year = 2023) {
+    return new Date(year, monthIndex, 1).getDay();
   }
 
-  getMonthlyCalendar() {
-    const daysInMonth = this.#noOfDays;
-    const startingDay = this.#startingDay;
+  getMonthlyCalendar(monthIndex, year = 2023) {
+    const daysInMonth = this.#getDaysInMonth(monthIndex, year);
+    const startingDay = this.#getStartingDay(monthIndex, year);
 
     return Array.from({ length: 35 }, function (_, i) {
       const date = i - startingDay + 1;
@@ -34,23 +34,19 @@ class Calendar {
     }).join(" ");
   }
 
-  toString(monthlyCalendar) {
-    const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
-    const days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-    const month = months[this.#monthIndex];
-    const heading = centerAlign(month + ' ' + this.#year, 20);
-    const label = [[heading], days];
-    const weeks = [...label, ...chunk(monthlyCalendar, 7)];
+  toString(monthlyCalendar, monthIndex, year = 2023) {
+    const month = this.#months[monthIndex];
+    const heading = centerAlign(month + ' ' + year, this.#days.length * 3);
+    const label = [[heading], this.#days];
+    const weeks = [...label, ...chunk(monthlyCalendar, this.#days.length)];
 
     return weeks.map(this.#renderWeek).join("\n");
   }
 
   getYearlyCalendar(year = 2023) {
-    return Array.from({ length: 12 }, function (_, i) {
-      return this.getMonthlyCalendar(i, year);
+    const cal = this;
+    return Array.from({ length: 12 }, function (_, monthIndex) {
+      return cal.getMonthlyCalendar(monthIndex, year);
     });
   }
 
