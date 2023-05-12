@@ -5,9 +5,12 @@ class Calendar {
   #months;
   #days;
 
-  constructor(months, days) {
-    this.#months = [...months];
-    this.#days = [...days];
+  constructor() {
+    this.#months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    this.#days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
   }
 
   #getDaysInMonth(monthIndex, year = 2023) {
@@ -30,15 +33,15 @@ class Calendar {
 
   #renderWeek(week) {
     return week.map(function (day) {
-      return centerAlign(day, 3);
+      return centerAlign(day, 2);
     }).join(" ");
   }
 
-  toString(monthlyCalendar, monthIndex, year = 2023) {
+  monthToString(monthlyCalendar, monthIndex, year = 2023) {
     const month = this.#months[monthIndex];
-    const heading = centerAlign(month + ' ' + year, this.#days.length * 3);
+    const heading = centerAlign(`${month} ${year}`, 20);
     const label = [[heading], this.#days];
-    const weeks = [...label, ...chunk(monthlyCalendar, this.#days.length)];
+    const weeks = [...label, ...chunk(monthlyCalendar, 7)];
 
     return weeks.map(this.#renderWeek).join("\n");
   }
@@ -50,9 +53,31 @@ class Calendar {
     });
   }
 
+  #quarterToString(quarter, quarterIndex) {
+    const first = this.#months[quarterIndex];
+    const second = this.#months[quarterIndex + 1];
+    const third = this.#months[quarterIndex + 2];
+
+    const heading = centerAlign(first, 20) + centerAlign(second, 28) + centerAlign(third, 20);
+
+    const weeklyCalendars = quarter.flatMap(function (month) {
+      return chunk(month, 7);
+    });
+
+    const rows = [[heading]];
+    for (let i = 0; i < 5; i++) {
+      rows.push([...weeklyCalendars[i], "  ", ...weeklyCalendars[i + 5], "  ", ...weeklyCalendars[i + 10]]);
+    }
+
+    return rows.map(this.#renderWeek).join("\n");
+  }
+
   yearToString(yearlyCalendar, year) {
-    return yearlyCalendar.reduce(function (yearlyCalendarText, monthlyCalendar, monthIndex) {
-      return yearlyCalendarText.concat(this.toString(monthlyCalendar, monthIndex, year));
+    const quarterlyCalendar = chunk(yearlyCalendar, 3);
+
+    const cal = this;
+    return quarterlyCalendar.reduce(function (eachQuarterText, quarter, quarterIndex) {
+      return `${eachQuarterText}${cal.#quarterToString(quarter, quarterIndex)}\n`;
     }, "");
   }
 }
