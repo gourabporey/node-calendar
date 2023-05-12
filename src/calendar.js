@@ -37,9 +37,8 @@ class Calendar {
   }
 
   getYearlyCalendar(year = 2023) {
-    const cal = this;
-    return Array.from({ length: 12 }, function (_, monthIndex) {
-      return cal.getMonthlyCalendar(monthIndex, year);
+    return Array.from({ length: 12 }, (_, monthIndex) => {
+      return this.getMonthlyCalendar(monthIndex, year);
     });
   }
 
@@ -64,6 +63,7 @@ class Calendar {
 
     const heading = this.#getHeadline(months);
     const labels = this.#generateQuarterlyDayLabels();
+
     const rows = [[heading], labels];
 
     for (let i = 0; i < 5; i++) {
@@ -82,6 +82,4 @@ class Calendar {
   }
 }
 
-const c = new Calendar();
-console.log(c.yearToString(c.getYearlyCalendar(2023), 2023));
 exports.Calendar = Calendar;
